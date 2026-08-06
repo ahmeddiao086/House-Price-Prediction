@@ -151,9 +151,3 @@ Response:
 <img width=70% alt="image" src="https://github.com/user-attachments/assets/bdbae207-dafd-49bc-8ec6-4e514b143446" />
 
 
-
-- Don't commit `.env`, `node_modules/`, `.venv/`, or the raw dataset CSV.
-- Pin `scikit-learn` in `requirements.txt` to the exact version used in the notebook
-  (check with `import sklearn; print(sklearn.__version__)`), otherwise the pickle may
-  fail to load.
-- Always report metrics on the **test set**, never the training set.
