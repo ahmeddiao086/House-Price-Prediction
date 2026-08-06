@@ -46,7 +46,7 @@ house-price-project/
 
 - Source: [House Price — Juhi Bhojani (Kaggle)](https://www.kaggle.com/datasets/juhibhojani/house-price)
 - ~187k Indian property listings.
-- Download it manually or via the Kaggle CLI and place `house_prices.csv` in `notebooks/data/`:
+- Download it manually or via the Kaggle CLI and place `house_prices.csv` in `notebooks/dataset/`:
 
 ```bash
 pip install kaggle
