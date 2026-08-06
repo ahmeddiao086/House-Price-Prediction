@@ -1,0 +1,173 @@
+# 🏠 House Price Prediction — End-to-End ML Web App
+
+Predicts Indian real-estate prices from listing details, using a scikit-learn
+pipeline trained on the [House Price dataset](https://www.kaggle.com/datasets/juhibhojani/house-price)
+by Juhi Bhojani (Kaggle), served through a FastAPI backend and a React frontend.
+
+## Architecture
+
+```
+User → React (Vite) frontend  →  POST /predict  →  FastAPI backend  →  scikit-learn Pipeline (.pkl)
+                                                                              ↑
+                                                         trained in notebooks/house_price_model.ipynb
+```
+
+## Tech stack
+
+| Layer      | Tech                                   |
+|------------|-----------------------------------------|
+| Modeling   | pandas, scikit-learn, joblib            |
+| Backend    | FastAPI, pydantic-settings, uvicorn     |
+| Frontend   | React 18, TypeScript, Vite, react-router-dom |
+
+## Project structure
+
+```
+house-price-project/
+├── notebooks/
+│   └── house_price_model.ipynb   # data cleaning, training, evaluation, export
+├── backend/
+│   ├── app/
+│   │   ├── main.py               # FastAPI app, CORS, model loaded at startup
+│   │   ├── api/routes/prediction.py
+│   │   ├── core/config.py
+│   │   ├── schemas/prediction.py
+│   │   └── services/{preprocessing,inference}.py
+│   ├── models/house_price.pkl    # copy from the notebook output
+│   ├── models/locations.json     # copy from the notebook output
+│   ├── tests/test_prediction.py
+│   └── requirements.txt
+└── frontend/
+    ├── src/{api,components,pages,types}/
+    └── public/locations.json     # copy from the notebook output
+```
+
+## Dataset
+
+- Source: [House Price — Juhi Bhojani (Kaggle)](https://www.kaggle.com/datasets/juhibhojani/house-price)
+- ~187k Indian property listings.
+- Download it manually or via the Kaggle CLI and place `house_prices.csv` in `notebooks/data/`:
+
+```bash
+pip install kaggle
+kaggle datasets download -d juhibhojani/house-price -p notebooks/data --unzip
+```
+
+## Setup
+
+### 1. Notebook
+
+```bash
+cd notebooks
+pip install pandas numpy scikit-learn matplotlib seaborn joblib jupyter
+jupyter notebook house_price_model.ipynb
+```
+
+Running it end-to-end produces `house_price.pkl` and `locations.json`.
+Copy both into `backend/models/` **and** copy `locations.json` into `frontend/public/` too.
+
+### 2. Backend
+
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env
+uvicorn app.main:app --reload
+```
+
+Visit `http://localhost:8000/docs` to try `/predict` from the Swagger UI.
+
+Run tests:
+
+```bash
+pytest
+```
+
+### 3. Frontend
+
+```bash
+cd frontend
+npm install
+cp .env.example .env
+npm run dev
+```
+
+Visit `http://localhost:5173`.
+
+## Environment variables
+
+**backend/.env**
+
+| Variable          | Description                     | Default                      |
+|--------------------|----------------------------------|-------------------------------|
+| `MODEL_PATH`       | Path to the trained pipeline     | `models/house_price.pkl`      |
+| `LOCATIONS_PATH`   | Path to allowed locations JSON   | `models/locations.json`       |
+| `ALLOWED_ORIGINS`  | CORS-allowed frontend origin(s)  | `http://localhost:5173`       |
+
+**frontend/.env**
+
+| Variable              | Description               | Default                 |
+|------------------------|----------------------------|--------------------------|
+| `VITE_API_BASE_URL`   | Backend base URL           | `http://localhost:8000` |
+
+## API reference
+
+### `GET /health`
+
+```json
+{ "status": "ok" }
+```
+
+### `POST /predict`
+
+```bash
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "location": "Sector 150 Noida",
+    "total_area_sqft": 1200,
+    "floor_clean": 3,
+    "bathroom_clean": 2,
+    "balcony_clean": 1,
+    "furnishing": "Semi-Furnished",
+    "transaction": "Resale",
+    "ownership": "Freehold",
+    "facing": "East"
+  }'
+```
+
+Response:
+
+```json
+{ "predicted_price": 6500000.0 }
+```
+
+## Model performance (test set)
+
+Trained on `log1p(price)`, predictions inverted with `expm1`. Two models were compared;
+**Random Forest Regressor** was selected as the winner (large improvement over the Linear
+Regression baseline, which underfits the non-linear price relationships):
+
+| Model                       | MAE          | RMSE         | R²      |
+|------------------------------|--------------|--------------|---------|
+| Linear Regression (baseline) | ~4,569,261   | ~45,223,382  | -13.30  |
+| **Random Forest Regressor**  | **1,150,260**| **3,489,290**| **0.91**|
+
+Trained on 174,247 rows (after cleaning + outlier removal) with scikit-learn 1.8.0.
+5-fold cross-validation mean R²: **0.58** (high variance across folds — location-heavy
+one-hot features likely cause some folds to see unseen high-cardinality categories;
+a documented limitation, worth revisiting with target encoding).
+
+## Screenshots
+
+_Add screenshots of the running app here before submitting._
+
+## Common pitfalls to avoid
+
+- Don't commit `.env`, `node_modules/`, `.venv/`, or the raw dataset CSV.
+- Pin `scikit-learn` in `requirements.txt` to the exact version used in the notebook
+  (check with `import sklearn; print(sklearn.__version__)`), otherwise the pickle may
+  fail to load.
+- Always report metrics on the **test set**, never the training set.
