@@ -34,9 +34,9 @@ house-price-project/
 │   │   ├── schemas/prediction.py
 │   │   └── services/{preprocessing,inference}.py
 │   ├── models/house_price.pkl    # copy from the notebook output
-│   ├── models/locations.json     # copy from the notebook output
 │   ├── tests/test_prediction.py
 │   └── requirements.txt
+│   └── locations.json    # copy from the notebook output
 └── frontend/
     ├── src/{api,components,pages,types}/
     └── public/locations.json     # copy from the notebook output
