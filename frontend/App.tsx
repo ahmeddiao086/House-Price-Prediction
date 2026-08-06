@@ -71,6 +71,9 @@ function App() {
         </div>
         <div className="nav-links">
           <a href="#" className="active">Predict</a>
+          <a href="#">About</a>
+          <a href="#">How it works</a>
+          <a href="#">Dataset</a>
           <button className="theme-toggle">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
           </button>
@@ -246,7 +249,9 @@ function App() {
         </div>
       </main>
       
-
+      <footer className="footer">
+        © 2026 House Price Predictor. All rights reserved.
+      </footer>
     </div>
   );
 }
