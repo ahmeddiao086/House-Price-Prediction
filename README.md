@@ -50,7 +50,7 @@ house-price-project/
 
 ```bash
 pip install kaggle
-kaggle datasets download -d juhibhojani/house-price -p notebooks/data --unzip
+kaggle datasets download -d juhibhojani/house-price -p notebooks/dataset --unzip
 ```
 
 ## Setup
