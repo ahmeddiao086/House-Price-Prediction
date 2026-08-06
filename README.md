@@ -64,7 +64,7 @@ jupyter notebook house_price_model.ipynb
 ```
 
 Running it end-to-end produces `house_price.pkl` and `locations.json`.
-Copy both into `backend/models/` **and** copy `locations.json` into `frontend/public/` too.
+Copy `house_price.pkl` into `backend/models/` **and** copy `locations.json` into `backend/` too.
 
 ### 2. Backend
 
@@ -103,7 +103,7 @@ Visit `http://localhost:5173`.
 | Variable          | Description                     | Default                      |
 |--------------------|----------------------------------|-------------------------------|
 | `MODEL_PATH`       | Path to the trained pipeline     | `models/house_price.pkl`      |
-| `LOCATIONS_PATH`   | Path to allowed locations JSON   | `models/locations.json`       |
+| `LOCATIONS_PATH`   | Path to allowed locations JSON   | `locations.json`       |
 | `ALLOWED_ORIGINS`  | CORS-allowed frontend origin(s)  | `http://localhost:5173`       |
 
 **frontend/.env**
@@ -144,27 +144,11 @@ Response:
 { "predicted_price": 6500000.0 }
 ```
 
-## Model performance (test set)
-
-Trained on `log1p(price)`, predictions inverted with `expm1`. Two models were compared;
-**Random Forest Regressor** was selected as the winner (large improvement over the Linear
-Regression baseline, which underfits the non-linear price relationships):
-
-| Model                       | MAE          | RMSE         | R²      |
-|------------------------------|--------------|--------------|---------|
-| Linear Regression (baseline) | ~4,569,261   | ~45,223,382  | -13.30  |
-| **Random Forest Regressor**  | **1,150,260**| **3,489,290**| **0.91**|
-
-Trained on 174,247 rows (after cleaning + outlier removal) with scikit-learn 1.8.0.
-5-fold cross-validation mean R²: **0.58** (high variance across folds — location-heavy
-one-hot features likely cause some folds to see unseen high-cardinality categories;
-a documented limitation, worth revisiting with target encoding).
 
 ## Screenshots
 
 _Add screenshots of the running app here before submitting._
 
-## Common pitfalls to avoid
 
 - Don't commit `.env`, `node_modules/`, `.venv/`, or the raw dataset CSV.
 - Pin `scikit-learn` in `requirements.txt` to the exact version used in the notebook
