@@ -147,7 +147,9 @@ Response:
 
 ## Screenshots
 
-_Add screenshots of the running app here before submitting._
+<img width="1897" height="1078" alt="image" src="https://github.com/user-attachments/assets/fddc044f-6452-4050-9683-971da371f73f" />
+<img width="1897" height="1078" alt="image" src="https://github.com/user-attachments/assets/bdbae207-dafd-49bc-8ec6-4e514b143446" />
+
 
 
 - Don't commit `.env`, `node_modules/`, `.venv/`, or the raw dataset CSV.
